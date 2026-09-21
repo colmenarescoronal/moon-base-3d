@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b0e13" />
+    <title>Moon Base — Tranquility</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="app">
+      <div id="scene" aria-label="Escena 3D de una base lunar"></div>
+      <div class="vignette"></div>
+
+      <section class="identity-screen" id="identity-screen" role="dialog" aria-modal="true" aria-labelledby="identity-title">
+        <form class="identity-card" id="identity-form">
+          <span class="identity-kicker">REGISTRO DE TRIPULACIÓN / 001</span>
+          <h2 id="identity-title">¿Quién explora la Luna?</h2>
+          <p>Escribe el nombre que aparecerá sobre tu astronauta.</p>
+          <label for="astronaut-name">NOMBRE DEL ASTRONAUTA</label>
+          <input id="astronaut-name" name="astronautName" type="text" maxlength="18" autocomplete="off" placeholder="EJ. ALEX" required autofocus />
+          <button type="submit">INICIAR MISIÓN <span>↗</span></button>
+        </form>
+      </section>
+
+      <div class="astronaut-name-tag" id="astronaut-name-tag" aria-hidden="true" hidden></div>
+
+      <header class="topbar">
+        <div class="brand"><span class="brand-mark">✳</span><span>MOON<span class="brand-light">BASE</span></span><span class="brand-edition">/ 03</span></div>
+        <div class="mission-pill"><span class="pulse"></span> MISIÓN ACTIVA <span class="mission-divider"></span> MAR DE LA TRANQUILIDAD</div>
+        <button class="sound-button" id="sound-button" type="button" aria-label="Activar sonido" title="Activar sonido"><span id="sound-icon">◌</span> <span class="sound-label">AMBIENTE OFF</span></button>
+      </header>
+
+      <main class="hero-copy">
+        <div class="eyebrow"><span class="eyebrow-line"></span> EXPLORACIÓN LUNAR / 001</div>
+        <h1>Un pequeño paso.<br /><em>Un nuevo mundo.</em></h1>
+        <p>Explora la superficie lunar, recorre la base y descubre los módulos de una misión lejos de casa.</p>
+        <button class="primary-button" id="explore-button" type="button">EMPEZAR A EXPLORAR <span>↗</span></button>
+      </main>
+
+      <div class="scene-label label-earth"><span class="label-line"></span><span>TIERRA<br /><small>384.400 KM</small></span></div>
+      <div class="scene-label label-base"><span class="label-dot"></span><span>BASE TRANQUILITY<br /><small>HÁBITAT PRINCIPAL</small></span></div>
+
+      <aside class="coordinate-card"><span class="card-heading">UBICACIÓN ACTUAL <span>⌖</span></span><strong>08° 30′ N<br />31° 24′ E</strong><span class="card-footer">SUPERFICIE LUNAR <span>● EN LÍNEA</span></span></aside>
+
+      <div class="bottom-ui">
+        <div class="controls-hint"><span class="hint-title">CONTROLES</span><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> MOVERSE</span><span><span class="mouse-icon">◉</span> GIRAR VISTA</span><span><kbd>⇧</kbd> CORRER</span><span><kbd class="wide">ESPACIO</kbd> SALTAR</span></div>
+        <nav class="camera-switch" aria-label="Vistas de cámara"><button class="active" data-view="explore" type="button">01 <span>EXPLORAR</span></button><button data-view="overview" type="button">02 <span>VISTA GENERAL</span></button><button data-view="rover" type="button">03 <span>ROVER</span></button></nav>
+      </div>
+
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
