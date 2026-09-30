@@ -32,6 +32,8 @@ Después del despliegue, abrir la URL pública y comprobar el modelo del astrona
 
 El backend no se despliega en Netlify. `render.yaml` crea un Web Service de Render con raíz `server/`. Configurar `ALLOWED_ORIGINS` en Render con el origen de Netlify. `src/network/multiplayer.js` conserva el endpoint público actual como respaldo para Netlify Drop; `VITE_MULTIPLAYER_URL` permite sobrescribirlo durante builds conectados a Git. Cualquier cambio de endpoint exige un nuevo build y despliegue. `/health` devuelve la cantidad actual de salas y jugadores.
 
+`ALLOWED_ORIGINS` debe contener solo el origen exacto, sin ruta ni barra final: `https://moon-base-3d.netlify.app`. No se debe usar `wss://` en esta variable; ese protocolo corresponde únicamente a `VITE_MULTIPLAYER_URL`. Si no coincide, Render rechaza el handshake WebSocket con HTTP 403 y el cliente permanece en **RECONECTANDO**.
+
 Los mensajes del cliente nunca se aplican directamente sin límites: `server/server.js` limpia nombres y salas, valida colores, restringe coordenadas y velocidad, limita tamaño y frecuencia de mensajes y usa ping/pong para retirar conexiones muertas. Al añadir mensajes nuevos, mantener la validación en el servidor y evitar enviar geometría, partículas o cámara, que deben seguir siendo locales.
 
 ## Añadir un objeto a la Luna

@@ -4,6 +4,10 @@ Los cambios terminados se registran aquí para facilitar la evolución del proye
 
 ## Sin publicar
 
+### 2026-09-30
+
+- Se diagnosticó el estado permanente **RECONECTANDO** como un rechazo HTTP 403 del WebSocket por discrepancia en `ALLOWED_ORIGINS`; se documentó que Render requiere el origen exacto de Netlify, con `https://` y sin barra final.
+
 ### 2026-09-29
 
 - Se configuró el endpoint público actual de Render como respaldo del cliente para que los builds manuales de Netlify Drop no dependan de variables disponibles únicamente durante compilaciones alojadas; `VITE_MULTIPLAYER_URL` permanece como sobrescritura opcional.
