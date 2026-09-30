@@ -4,6 +4,13 @@ Los cambios terminados se registran aquí para facilitar la evolución del proye
 
 ## Sin publicar
 
+### 2026-09-29
+
+- Se añadió multijugador por salas mediante un backend Node.js/WebSocket desplegable en Render; mantiene presencia en memoria, valida estados, publica snapshots a 15 Hz y admite hasta 24 pilotos por sala.
+- El registro inicial ahora solicita un código de sala y el HUD muestra conexión y cantidad de pilotos. Los astronautas remotos tienen nombre, color, animación e interpolación de posición y orientación.
+- Se añadió reconexión con espera progresiva, health check, restricción opcional de orígenes y configuración de producción mediante `VITE_MULTIPLAYER_URL` y `render.yaml`.
+- Se incorporaron pruebas de normalización de salas y reconexión, además de una prueba de integración con dos clientes; se documentó el desarrollo local y el despliegue coordinado entre Netlify y Render.
+
 ### 2026-09-20
 
 - Se añadió `netlify.toml` y se documentaron los despliegues manual y continuo en Netlify, incluyendo los recursos GLB y Draco que deben publicarse.

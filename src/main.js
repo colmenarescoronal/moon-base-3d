@@ -8,6 +8,7 @@ import { createWorld } from './world/index.js';
 import { createCameraController } from './camera/controller.js';
 import { createUserInterface } from './ui/interface.js';
 import { createAstronautIdentity } from './ui/astronaut-identity.js';
+import { createMultiplayer } from './network/multiplayer.js';
 import './style.css';
 
 const mount = document.querySelector('#scene');
@@ -47,6 +48,13 @@ const player = createPlayerController({ astronaut, camera, input, world, footste
 const astronautIdentity = createAstronautIdentity({ astronaut, camera });
 
 const ui = createUserInterface({ cameraController, canvas: renderer.domElement });
+const multiplayer = createMultiplayer({
+  scene,
+  astronaut,
+  heightAt: world.heightAt,
+  identity: astronautIdentity,
+  onStatus: status => ui.setNetworkStatus(status),
+});
 
 const clock = new THREE.Clock();
 function animate() {
@@ -54,8 +62,10 @@ function animate() {
   const dt = Math.min(clock.getDelta(), .05);
   earth.rotation.y += dt * .013;
   world.update(dt, astronaut.position);
-  const { dx, dz, active } = player.update(dt);
+  const movement = player.update(dt);
+  const { dx, dz, active } = movement;
   if (active) ui.playerActive();
+  multiplayer.update(dt, movement);
   cameraController.follow(dx, dz);
   cameraController.update();
   astronautIdentity.update();

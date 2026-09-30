@@ -21,6 +21,9 @@
           <p>Escribe el nombre que aparecerá sobre tu astronauta.</p>
           <label for="astronaut-name">NOMBRE DEL ASTRONAUTA</label>
           <input id="astronaut-name" name="astronautName" type="text" maxlength="18" autocomplete="off" placeholder="EJ. ALEX" required autofocus />
+          <label for="room-code" class="room-label">CÓDIGO DE SALA</label>
+          <input id="room-code" name="roomCode" type="text" maxlength="12" autocomplete="off" value="ECHO-01" aria-describedby="room-help" />
+          <small id="room-help" class="room-help">Comparte este código para explorar con otros pilotos.</small>
           <button type="submit">INICIAR MISIÓN <span>↗</span></button>
         </form>
       </section>
@@ -30,7 +33,10 @@
       <header class="topbar">
         <div class="brand"><span class="brand-mark">✳</span><span>MOON<span class="brand-light">BASE</span></span><span class="brand-edition">/ 03</span></div>
         <div class="mission-pill"><span class="pulse"></span> MISIÓN ACTIVA <span class="mission-divider"></span> MAR DE LA TRANQUILIDAD</div>
-        <button class="sound-button" id="sound-button" type="button" aria-label="Activar sonido" title="Activar sonido"><span id="sound-icon">◌</span> <span class="sound-label">AMBIENTE OFF</span></button>
+        <div class="topbar-actions">
+          <div class="network-status" id="network-status" data-state="offline"><span class="network-dot"></span><span><b id="network-label">SERVIDOR SIN CONFIGURAR</b><small id="player-count">1 PILOTO</small></span></div>
+          <button class="sound-button" id="sound-button" type="button" aria-label="Activar sonido" title="Activar sonido"><span id="sound-icon">◌</span> <span class="sound-label">AMBIENTE OFF</span></button>
+        </div>
       </header>
 
       <main class="hero-copy">

@@ -21,6 +21,9 @@ export function createUserInterface({
   const soundIcon = root.querySelector('#sound-icon');
   const soundLabel = root.querySelector('.sound-label');
   const viewButtons = [...root.querySelectorAll('[data-view]')];
+  const networkStatus = root.querySelector('#network-status');
+  const networkLabel = root.querySelector('#network-label');
+  const playerCount = root.querySelector('#player-count');
   let toastTimer;
 
   const showToast = message => {
@@ -62,6 +65,12 @@ export function createUserInterface({
 
   return {
     setView,
+    setNetworkStatus({ state, label, players = 1, notice }) {
+      networkStatus?.setAttribute('data-state', state);
+      if (networkLabel) networkLabel.textContent = label;
+      if (playerCount) playerCount.textContent = `${players} ${players === 1 ? 'PILOTO' : 'PILOTOS'}`;
+      if (notice) showToast(notice.toUpperCase());
+    },
     playerActive() {
       hero.classList.add('collapsed');
     },

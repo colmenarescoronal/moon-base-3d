@@ -37,13 +37,15 @@ function createFixture() {
   const elements = {
     hero: new FakeElement(), toast: new FakeElement(), explore: new FakeElement(),
     soundButton: new FakeElement(), soundIcon: new FakeElement(), soundLabel: new FakeElement(),
+    networkStatus: new FakeElement(), networkLabel: new FakeElement(), playerCount: new FakeElement(),
     views: ['explore', 'overview', 'rover'].map(view => new FakeElement({ view })),
   };
   const root = {
     querySelector(selector) {
       return ({ '.hero-copy': elements.hero, '#toast': elements.toast, '#explore-button': elements.explore,
         '#sound-button': elements.soundButton, '#sound-icon': elements.soundIcon,
-        '.sound-label': elements.soundLabel })[selector];
+        '.sound-label': elements.soundLabel, '#network-status': elements.networkStatus,
+        '#network-label': elements.networkLabel, '#player-count': elements.playerCount })[selector];
     },
     querySelectorAll: selector => selector === '[data-view]' ? elements.views : [],
   };
@@ -82,6 +84,10 @@ test('interface coordinates view buttons, keyboard, activity, and sound state', 
   await Promise.resolve();
   assert.equal(elements.soundLabel.textContent, 'AMBIENTE ON');
   assert.equal(elements.soundButton.attributes.get('aria-label'), 'Desactivar sonido');
+  ui.setNetworkStatus({ state: 'online', label: 'SALA ECHO-01', players: 2 });
+  assert.equal(elements.networkStatus.attributes.get('data-state'), 'online');
+  assert.equal(elements.networkLabel.textContent, 'SALA ECHO-01');
+  assert.equal(elements.playerCount.textContent, '2 PILOTOS');
   ui.dispose();
 });
 
@@ -89,11 +95,14 @@ test('astronaut identity normalizes the name, chooses a color, and follows the p
   const screen = new FakeElement();
   const form = new FakeElement();
   const input = new FakeElement();
+  const roomInput = new FakeElement();
+  roomInput.value = ' luna-amigos ';
   const tag = new FakeElement();
   const root = { querySelector: selector => ({
     '#identity-screen': screen,
     '#identity-form': form,
     '#astronaut-name': input,
+    '#room-code': roomInput,
     '#astronaut-name-tag': tag,
   })[selector] };
   const astronaut = new THREE.Group();
@@ -103,6 +112,8 @@ test('astronaut identity normalizes the name, chooses a color, and follows the p
   camera.updateMatrixWorld();
   const identity = createAstronautIdentity({ astronaut, camera, root, random: () => 0,
     viewport: () => ({ width: 800, height: 600 }) });
+  let registration;
+  identity.onReady(value => { registration = value; });
   await Promise.resolve();
 
   input.value = '  Luna   Rivera  ';
@@ -111,11 +122,14 @@ test('astronaut identity normalizes the name, chooses a color, and follows the p
 
   assert.equal(identity.name, 'Luna Rivera');
   assert.equal(identity.color, ASTRONAUT_COLORS[0]);
+  assert.equal(identity.room, 'LUNA-AMIGOS');
+  assert.deepEqual(registration, { name: 'Luna Rivera', color: ASTRONAUT_COLORS[0], room: 'LUNA-AMIGOS' });
   assert.equal(tag.textContent, 'Luna Rivera');
   assert.equal(tag.style.values.get('--name-color'), ASTRONAUT_COLORS[0]);
   assert.equal(tag.hidden, false);
   assert.match(tag.style.transform, /translate\(/);
   assert.equal(screen.classList.contains('closed'), true);
   assert.equal(input.disabled, true);
+  assert.equal(roomInput.disabled, true);
   identity.dispose();
 });

@@ -16,10 +16,13 @@ export function createAstronautIdentity({
   const screen = root.querySelector('#identity-screen');
   const form = root.querySelector('#identity-form');
   const input = root.querySelector('#astronaut-name');
+  const roomInput = root.querySelector('#room-code');
   const tag = root.querySelector('#astronaut-name-tag');
   const worldPosition = new THREE.Vector3();
+  const readyListeners = new Set();
   let name = '';
   let color = '';
+  let room = 'ECHO-01';
 
   const onSubmit = event => {
     event.preventDefault();
@@ -30,12 +33,16 @@ export function createAstronautIdentity({
     }
     name = nextName;
     color = ASTRONAUT_COLORS[Math.floor(random() * ASTRONAUT_COLORS.length) % ASTRONAUT_COLORS.length];
+    room = String(roomInput?.value || 'ECHO-01').trim().toUpperCase()
+      .replace(/[^A-Z0-9_-]/g, '').slice(0, 12) || 'ECHO-01';
     tag.textContent = name;
     tag.style.setProperty('--name-color', color);
     tag.hidden = false;
     screen.classList.add('closed');
     screen.setAttribute('aria-hidden', 'true');
     input.disabled = true;
+    if (roomInput) roomInput.disabled = true;
+    readyListeners.forEach(listener => listener({ name, color, room }));
   };
 
   form.addEventListener('submit', onSubmit);
@@ -44,7 +51,13 @@ export function createAstronautIdentity({
   return {
     get name() { return name; },
     get color() { return color; },
+    get room() { return room; },
     get ready() { return Boolean(name); },
+    onReady(listener) {
+      readyListeners.add(listener);
+      if (name) listener({ name, color, room });
+      return () => readyListeners.delete(listener);
+    },
     update() {
       if (!name) return;
       astronaut.getWorldPosition(worldPosition);
@@ -62,6 +75,7 @@ export function createAstronautIdentity({
     },
     dispose() {
       form.removeEventListener('submit', onSubmit);
+      readyListeners.clear();
     },
   };
 }

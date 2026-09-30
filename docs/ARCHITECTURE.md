@@ -28,6 +28,10 @@
 | `src/ui/interface.js` | Botones, atajos de vistas, panel inicial, avisos y presentación del estado del sonido. |
 | `src/ui/ambient-sound.js` | Creación y activación del ambiente sonoro con Web Audio. |
 | `src/ui/astronaut-identity.js` | Registro del nombre, color aleatorio y proyección de la etiqueta sobre el astronauta. |
+| `src/network/multiplayer.js` | Conexión WebSocket, salas, snapshots, reconexión e interpolación de jugadores remotos. |
+| `src/network/remote-player.js` | Representación Three.js ligera, etiqueta y animación de cada astronauta remoto. |
+| `server/server.js` | Backend autoritativo de presencia: valida conexiones y estados y publica snapshots por sala. |
+| `render.yaml` | Blueprint del Web Service de Render, health check y variables del backend. |
 | `src/collision.js` | Colisionadores 2D con altura, resolución horizontal, cálculo del suelo e índice espacial por celdas. No depende del navegador. |
 | `scripts/profile-collisions.js` | Mide candidatos del índice espacial sobre el contenido real de la escena. |
 | `public/models/astronaut-emu.glb` | Modelo visual del traje EVA. |
@@ -49,7 +53,8 @@ El punto de entrada es `src/main.js`, cargado desde `index.html`. Vite sirve la 
 4. `createAstronaut` crea un personaje sencillo que sirve mientras carga el GLB. `loadRealisticAstronaut` lo sustituye visualmente y proporciona un rig con los mismos puntos de animación.
 5. `createPlayerInput` escucha el teclado y entrega una muestra `{x, z, run, jump}` por cuadro. La solicitud de salto se consume una vez por pulsación. El controlador entrega a `footstepSound` la distancia recorrida, velocidad, carrera y contacto con el suelo.
 6. `createCameraController` administra OrbitControls y las vistas `explore`, `overview` y `rover`. `createUserInterface` conecta botones y teclas 1–3 con ese controlador y administra avisos y sonido. `createAstronautIdentity` presenta el registro inicial y proyecta en cada cuadro la posición 3D del jugador a coordenadas de pantalla.
-7. En cada cuadro, `main.js` llama primero a `world.update(dt, astronaut.position)`, que conduce el rover y actualiza su colisionador, y después a `player.update(dt)`. El controlador mueve al astronauta y devuelve `{dx, dz, active, grounded}`; la cámara sigue al jugador o al rover según la vista activa, actualiza OrbitControls y `main.js` renderiza.
+7. Al confirmar la identidad, `createMultiplayer` abre el WebSocket y entra en la sala indicada. El cliente envía posición, orientación, velocidad y contacto con el suelo a 15 Hz; los snapshots crean, actualizan o retiran representaciones remotas y suavizan sus transforms entre mensajes.
+8. En cada cuadro, `main.js` llama primero a `world.update(dt, astronaut.position)`, que conduce el rover y actualiza su colisionador, y después a `player.update(dt)` y `multiplayer.update(dt, movement)`. La cámara sigue al jugador o al rover según la vista activa, actualiza OrbitControls y `main.js` renderiza.
 
 Las coordenadas usan **Y hacia arriba**; X y Z forman el plano del suelo. Las dimensiones de los colisionadores y las posiciones están en unidades de escena. El terreno no usa física de malla: el suelo se consulta mediante `heightAt` y `floorHeight`.
 
@@ -75,7 +80,7 @@ Las coordenadas usan **Y hacia arriba**; X y Z forman el plano del suelo. Las di
 
 ## Límites actuales
 
-`main.js` conserva la configuración del renderizador, las luces y el ciclo principal. `src/world/base.js` concentra los constructores visuales de varias clases de instalación, que se podrán separar cuando aumente su complejidad. La escena construye todo el contenido al iniciar y no tiene carga por sectores ni guardado de estado. Tras ampliar el terreno, el perfil registra 205 colisionadores y mantiene un máximo de 2 candidatos en 5,325 muestras. El rig del traje se calcula a partir de su geometría y conviene revisarlo si se cambia el modelo.
+`main.js` conserva la configuración del renderizador, las luces y el ciclo principal. `src/world/base.js` concentra los constructores visuales de varias clases de instalación, que se podrán separar cuando aumente su complejidad. La escena construye todo el contenido al iniciar y no tiene carga por sectores ni guardado persistente. El multijugador sincroniza presencia y movimiento, pero el rover, el terreno y otros objetos del mundo todavía se simulan localmente. Una sola instancia conserva las salas en memoria; escalar horizontalmente requerirá un coordinador compartido como Redis. Tras ampliar el terreno, el perfil registra 205 colisionadores y mantiene un máximo de 2 candidatos en 5,325 muestras. El rig del traje se calcula a partir de su geometría y conviene revisarlo si se cambia el modelo.
 
 ## Ruta propuesta, por etapas
 

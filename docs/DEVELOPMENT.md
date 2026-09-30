@@ -19,6 +19,8 @@ npm run profile:collisions
 
 `npm test` comprueba colisiones y reglas del jugador. `npm run build` verifica que la aplicación pueda empaquetarse. `npm run profile:collisions` mide cuántos sólidos candidatos examina el índice espacial en el área jugable. Después de cambiar animación, cámara, materiales o interfaz, comprobar también el resultado en el navegador: las pruebas no cubren esos aspectos visuales.
 
+Para trabajar con multijugador, iniciar `npm start` dentro de `server/`. El cliente servido por Vite detecta localhost y usa `ws://127.0.0.1:10001/ws`. `npm run smoke`, también dentro de `server/`, necesita que el backend esté activo y comprueba dos conexiones en una misma sala. Para probar otro puerto se puede definir `TEST_WS_URL`.
+
 ## Publicar en Netlify
 
 Hay dos formas admitidas:
@@ -27,6 +29,10 @@ Hay dos formas admitidas:
 2. **Repositorio conectado:** subir el código fuente, `package.json`, `package-lock.json`, `public`, `src`, `index.html` y `netlify.toml`. No incluir `node_modules` ni `dist`, que ya están ignorados. Netlify instalará las dependencias, ejecutará `npm run build` con Node.js 22 y publicará `dist`.
 
 Después del despliegue, abrir la URL pública y comprobar el modelo del astronauta, el formulario de nombre, el movimiento y la consola del navegador. Un modelo ausente suele indicar que no se subió la carpeta `dist/models` en un despliegue manual.
+
+El backend no se despliega en Netlify. `render.yaml` crea un Web Service de Render con raíz `server/`. Configurar `ALLOWED_ORIGINS` en Render con el origen de Netlify y `VITE_MULTIPLAYER_URL` en Netlify con `wss://<servicio>.onrender.com/ws`; esta última variable se incorpora al frontend durante el build, por lo que exige un nuevo despliegue. `/health` devuelve la cantidad actual de salas y jugadores.
+
+Los mensajes del cliente nunca se aplican directamente sin límites: `server/server.js` limpia nombres y salas, valida colores, restringe coordenadas y velocidad, limita tamaño y frecuencia de mensajes y usa ping/pong para retirar conexiones muertas. Al añadir mensajes nuevos, mantener la validación en el servidor y evitar enviar geometría, partículas o cámara, que deben seguir siendo locales.
 
 ## Añadir un objeto a la Luna
 
