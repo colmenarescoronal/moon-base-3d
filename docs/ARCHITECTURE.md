@@ -28,7 +28,7 @@
 | `src/ui/interface.js` | Botones, atajos de vistas, panel inicial, avisos y presentación del estado del sonido. |
 | `src/ui/ambient-sound.js` | Creación y activación del ambiente sonoro con Web Audio. |
 | `src/ui/astronaut-identity.js` | Registro del nombre, color aleatorio y proyección de la etiqueta sobre el astronauta. |
-| `src/network/multiplayer.js` | Conexión WebSocket, salas, snapshots, reconexión e interpolación de jugadores remotos. |
+| `src/network/multiplayer.js` | Conexión WebSocket, salas, snapshots, chat, reconexión e interpolación de jugadores remotos. |
 | `src/network/remote-player.js` | Representación Three.js ligera, etiqueta y animación de cada astronauta remoto. |
 | `server/server.js` | Backend autoritativo de presencia: valida conexiones y estados y publica snapshots por sala. |
 | `render.yaml` | Blueprint del Web Service de Render, health check y variables del backend. |
@@ -53,7 +53,7 @@ El punto de entrada es `src/main.js`, cargado desde `index.html`. Vite sirve la 
 4. `createAstronaut` crea un personaje sencillo que sirve mientras carga el GLB. `loadRealisticAstronaut` lo sustituye visualmente y proporciona un rig con los mismos puntos de animación.
 5. `createPlayerInput` escucha el teclado y entrega una muestra `{x, z, run, jump}` por cuadro. La solicitud de salto se consume una vez por pulsación. El controlador entrega a `footstepSound` la distancia recorrida, velocidad, carrera y contacto con el suelo.
 6. `createCameraController` administra OrbitControls y las vistas `explore`, `overview` y `rover`. `createUserInterface` conecta botones y teclas 1–3 con ese controlador y administra avisos y sonido. `createAstronautIdentity` presenta el registro inicial y proyecta en cada cuadro la posición 3D del jugador a coordenadas de pantalla.
-7. Al confirmar la identidad, `createMultiplayer` abre el WebSocket y entra en la sala indicada. El cliente envía posición, orientación, velocidad y contacto con el suelo a 15 Hz; los snapshots crean, actualizan o retiran representaciones remotas y suavizan sus transforms entre mensajes.
+7. Al confirmar la identidad, `createMultiplayer` abre el WebSocket y entra en la sala indicada. El cliente envía posición, orientación, velocidad y contacto con el suelo a 15 Hz; los snapshots crean, actualizan o retiran representaciones remotas y suavizan sus transforms entre mensajes. El chat utiliza el mismo socket, pero se retransmite inmediatamente como evento en lugar de esperar a un snapshot.
 8. En cada cuadro, `main.js` llama primero a `world.update(dt, astronaut.position)`, que conduce el rover y actualiza su colisionador, y después a `player.update(dt)` y `multiplayer.update(dt, movement)`. La cámara sigue al jugador o al rover según la vista activa, actualiza OrbitControls y `main.js` renderiza.
 
 Las coordenadas usan **Y hacia arriba**; X y Z forman el plano del suelo. Las dimensiones de los colisionadores y las posiciones están en unidades de escena. El terreno no usa física de malla: el suelo se consulta mediante `heightAt` y `floorHeight`.

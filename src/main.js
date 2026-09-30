@@ -54,7 +54,9 @@ const multiplayer = createMultiplayer({
   heightAt: world.heightAt,
   identity: astronautIdentity,
   onStatus: status => ui.setNetworkStatus(status),
+  onChat: message => ui.addChatMessage(message),
 });
+ui.setChatSender(message => multiplayer.sendChat(message));
 
 const clock = new THREE.Clock();
 function animate() {

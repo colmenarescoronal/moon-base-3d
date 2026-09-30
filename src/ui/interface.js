@@ -24,7 +24,13 @@ export function createUserInterface({
   const networkStatus = root.querySelector('#network-status');
   const networkLabel = root.querySelector('#network-label');
   const playerCount = root.querySelector('#player-count');
+  const chatPanel = root.querySelector('#chat-panel');
+  const chatRoom = root.querySelector('#chat-room');
+  const chatLog = root.querySelector('#chat-log');
+  const chatForm = root.querySelector('#chat-form');
+  const chatInput = root.querySelector('#chat-input');
   let toastTimer;
+  let chatSender = () => false;
 
   const showToast = message => {
     toastElement.textContent = message;
@@ -46,6 +52,16 @@ export function createUserInterface({
     canvas.focus();
   };
   const onKeyDown = event => {
+    const editable = event.target?.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target?.tagName);
+    if (event.code === 'Enter' && !editable && chatInput) {
+      event.preventDefault();
+      chatInput.focus();
+      return;
+    }
+    if (event.code === 'Escape' && event.target === chatInput) {
+      chatInput.blur();
+      return;
+    }
     if (event.code === 'Digit1') setView('explore');
     if (event.code === 'Digit2') setView('overview');
     if (event.code === 'Digit3') setView('rover');
@@ -57,11 +73,20 @@ export function createUserInterface({
     soundButton.setAttribute('aria-label', enabled ? 'Desactivar sonido' : 'Activar sonido');
     soundButton.title = enabled ? 'Desactivar sonido' : 'Activar sonido';
   };
+  const onChatSubmit = event => {
+    event.preventDefault();
+    const message = chatInput?.value.trim();
+    if (!message) return;
+    if (chatSender(message)) chatInput.value = '';
+    else showToast('CHAT NO DISPONIBLE · RECONECTANDO');
+    chatInput?.focus();
+  };
 
   viewButtons.forEach(button => button.addEventListener('click', onViewClick));
   exploreButton.addEventListener('click', onExplore);
   soundButton.addEventListener('click', onSound);
   keyboard.addEventListener('keydown', onKeyDown);
+  chatForm?.addEventListener('submit', onChatSubmit);
 
   return {
     setView,
@@ -69,7 +94,27 @@ export function createUserInterface({
       networkStatus?.setAttribute('data-state', state);
       if (networkLabel) networkLabel.textContent = label;
       if (playerCount) playerCount.textContent = `${players} ${players === 1 ? 'PILOTO' : 'PILOTOS'}`;
+      if (chatRoom && label.startsWith('SALA ')) chatRoom.textContent = label.slice(5);
+      chatPanel?.classList.toggle('disabled', state !== 'online');
       if (notice) showToast(notice.toUpperCase());
+    },
+    setChatSender(sender) {
+      chatSender = sender;
+    },
+    addChatMessage({ name, message, color = '#7ee7ff', system = false }) {
+      if (!chatLog) return;
+      const row = document.createElement('p');
+      row.className = `chat-message${system ? ' system' : ''}`;
+      if (system) row.textContent = message;
+      else {
+        row.style.setProperty('--chat-color', color);
+        const author = document.createElement('b');
+        author.textContent = `${name}: `;
+        row.append(author, document.createTextNode(message));
+      }
+      chatLog.append(row);
+      while (chatLog.children.length > 30) chatLog.firstElementChild.remove();
+      chatLog.scrollTop = chatLog.scrollHeight;
     },
     playerActive() {
       hero.classList.add('collapsed');
@@ -80,6 +125,7 @@ export function createUserInterface({
       exploreButton.removeEventListener('click', onExplore);
       soundButton.removeEventListener('click', onSound);
       keyboard.removeEventListener('keydown', onKeyDown);
+      chatForm?.removeEventListener('submit', onChatSubmit);
     },
   };
 }

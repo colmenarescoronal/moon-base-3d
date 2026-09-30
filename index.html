@@ -51,6 +51,15 @@
 
       <aside class="coordinate-card"><span class="card-heading">UBICACIÓN ACTUAL <span>⌖</span></span><strong>08° 30′ N<br />31° 24′ E</strong><span class="card-footer">SUPERFICIE LUNAR <span>● EN LÍNEA</span></span></aside>
 
+      <section class="chat-panel" id="chat-panel" aria-label="Chat de la sala">
+        <div class="chat-header"><span>CANAL DE TRIPULACIÓN</span><small id="chat-room">ECHO-01</small></div>
+        <div class="chat-log" id="chat-log" aria-live="polite"></div>
+        <form class="chat-form" id="chat-form">
+          <span>&gt;</span>
+          <input id="chat-input" type="text" maxlength="120" autocomplete="off" placeholder="ENTER PARA HABLAR…" aria-label="Mensaje para la sala" />
+        </form>
+      </section>
+
       <div class="bottom-ui">
         <div class="controls-hint"><span class="hint-title">CONTROLES</span><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> MOVERSE</span><span><span class="mouse-icon">◉</span> GIRAR VISTA</span><span><kbd>⇧</kbd> CORRER</span><span><kbd class="wide">ESPACIO</kbd> SALTAR</span></div>
         <nav class="camera-switch" aria-label="Vistas de cámara"><button class="active" data-view="explore" type="button">01 <span>EXPLORAR</span></button><button data-view="overview" type="button">02 <span>VISTA GENERAL</span></button><button data-view="rover" type="button">03 <span>ROVER</span></button></nav>

@@ -80,6 +80,7 @@ wss.on('connection', socket => {
   socket.room = null;
   socket.rateWindow = Date.now();
   socket.messageCount = 0;
+  socket.lastChatAt = 0;
   socket.on('pong', () => { socket.isAlive = true; });
 
   socket.on('message', raw => {
@@ -132,6 +133,15 @@ wss.on('connection', socket => {
       player.rotationY = clamp(message.rotationY, -Math.PI * 4, Math.PI * 4, player.rotationY);
       player.speed = clamp(message.speed, 0, 14, 0);
       player.grounded = message.grounded !== false;
+    } else if (message.type === 'chat') {
+      if (now - socket.lastChatAt < 500) return;
+      const text = cleanText(message.message, 120).replace(/\s+/g, ' ');
+      if (!text) return;
+      socket.lastChatAt = now;
+      broadcast(room, {
+        type: 'chat', id: player.id, name: player.name, color: player.color,
+        message: text, sentAt: now,
+      });
     }
   });
 

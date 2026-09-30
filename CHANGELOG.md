@@ -6,6 +6,8 @@ Los cambios terminados se registran aquí para facilitar la evolución del proye
 
 ### 2026-09-30
 
+- Se añadió un chat de tripulación por sala sobre el WebSocket existente, con nombres y colores de astronauta, mensajes de sistema al entrar o salir, acceso con `Enter` y diseño adaptable.
+- El servidor limita mensajes a 120 caracteres, normaliza espacios y aplica un intervalo mínimo por conexión; la interfaz usa texto seguro y conserva solo las últimas 30 entradas recibidas.
 - Se diagnosticó el estado permanente **RECONECTANDO** como un rechazo HTTP 403 del WebSocket por discrepancia en `ALLOWED_ORIGINS`; se documentó que Render requiere el origen exacto de Netlify, con `https://` y sin barra final.
 
 ### 2026-09-29

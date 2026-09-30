@@ -36,6 +36,8 @@ El backend no se despliega en Netlify. `render.yaml` crea un Web Service de Rend
 
 Los mensajes del cliente nunca se aplican directamente sin límites: `server/server.js` limpia nombres y salas, valida colores, restringe coordenadas y velocidad, limita tamaño y frecuencia de mensajes y usa ping/pong para retirar conexiones muertas. Al añadir mensajes nuevos, mantener la validación en el servidor y evitar enviar geometría, partículas o cámara, que deben seguir siendo locales.
 
+El chat limita cada mensaje a 120 caracteres, normaliza espacios y aplica un intervalo mínimo de 500 ms por conexión. No conserva historial en el backend: solo los clientes presentes reciben la retransmisión. La interfaz mantiene como máximo 30 entradas locales y usa nodos de texto, no HTML recibido, para evitar inyección de contenido.
+
 ## Añadir un objeto a la Luna
 
 1. Para añadir otra instancia de un tipo existente, agregar una entrada en la sección adecuada de `src/world/content.js`: `habitats`, `dishes`, `hoses`, `supplyCrates`, `rovers`, `beacons` o `surfaceMarkers`.

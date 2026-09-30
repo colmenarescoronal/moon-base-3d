@@ -6,6 +6,7 @@ export const normalizeRoomCode = value => String(value || '')
   .trim().toUpperCase().replace(/[^A-Z0-9_-]/g, '').slice(0, 12) || 'ECHO-01';
 
 export const reconnectDelay = attempt => Math.min(1000 * 2 ** Math.max(0, attempt), 15000);
+export const normalizeChatMessage = value => String(value || '').trim().replace(/\s+/g, ' ').slice(0, 120);
 
 export function createMultiplayer({
   scene,
@@ -13,6 +14,7 @@ export function createMultiplayer({
   heightAt,
   identity,
   onStatus = () => {},
+  onChat = () => {},
   socketFactory = url => new WebSocket(url),
   serverUrl = (location.hostname === '127.0.0.1' || location.hostname === 'localhost')
     ? `ws://${location.hostname}:10001/ws`
@@ -84,11 +86,15 @@ export function createMultiplayer({
       if (message.type === 'welcome') {
         playerId = message.id;
         applySnapshot(message.players || []);
+        onChat({ system: true, message: `Conectado a ${credentials.room}` });
       } else if (message.type === 'snapshot') {
         applySnapshot(message.players || []);
       } else if (message.type === 'presence') {
-        onStatus({ state: 'online', label: `SALA ${credentials.room}`, players: remotes.size + 1,
-          notice: message.event === 'join' ? `${message.name} llegó a la base` : `${message.name} salió de la base` });
+        const notice = message.event === 'join' ? `${message.name} llegó a la base` : `${message.name} salió de la base`;
+        onStatus({ state: 'online', label: `SALA ${credentials.room}`, players: remotes.size + 1, notice });
+        onChat({ system: true, message: notice });
+      } else if (message.type === 'chat') {
+        onChat({ name: message.name, color: message.color, message: message.message, own: message.id === playerId });
       } else if (message.type === 'error') {
         onStatus({ state: 'offline', label: 'ERROR DE SALA', players: 1, notice: message.message });
       }
@@ -113,6 +119,12 @@ export function createMultiplayer({
   report(serverUrl ? 'connecting' : 'offline', serverUrl ? 'ESPERANDO PILOTO' : 'SERVIDOR SIN CONFIGURAR');
 
   return {
+    sendChat(value) {
+      const message = normalizeChatMessage(value);
+      if (!message || !playerId || socket?.readyState !== 1) return false;
+      send({ type: 'chat', message });
+      return true;
+    },
     update(dt, movement = {}) {
       remotes.forEach(remote => remote.update(dt));
       if (!playerId || socket?.readyState !== 1) return;
