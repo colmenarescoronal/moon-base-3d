@@ -1,5 +1,7 @@
 import { createRemotePlayer } from './remote-player.js';
 
+export const DEFAULT_MULTIPLAYER_URL = 'wss://moon-base-3d-realtime.onrender.com/ws';
+
 export const normalizeRoomCode = value => String(value || '')
   .trim().toUpperCase().replace(/[^A-Z0-9_-]/g, '').slice(0, 12) || 'ECHO-01';
 
@@ -12,9 +14,9 @@ export function createMultiplayer({
   identity,
   onStatus = () => {},
   socketFactory = url => new WebSocket(url),
-  serverUrl = import.meta.env.VITE_MULTIPLAYER_URL ||
-    ((location.hostname === '127.0.0.1' || location.hostname === 'localhost')
-      ? `ws://${location.hostname}:10001/ws` : ''),
+  serverUrl = (location.hostname === '127.0.0.1' || location.hostname === 'localhost')
+    ? `ws://${location.hostname}:10001/ws`
+    : (import.meta.env.VITE_MULTIPLAYER_URL || DEFAULT_MULTIPLAYER_URL),
   schedule = setTimeout,
   cancelSchedule = clearTimeout,
 }) {

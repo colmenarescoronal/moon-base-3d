@@ -6,6 +6,7 @@ Los cambios terminados se registran aquí para facilitar la evolución del proye
 
 ### 2026-09-29
 
+- Se configuró el endpoint público actual de Render como respaldo del cliente para que los builds manuales de Netlify Drop no dependan de variables disponibles únicamente durante compilaciones alojadas; `VITE_MULTIPLAYER_URL` permanece como sobrescritura opcional.
 - Se añadió multijugador por salas mediante un backend Node.js/WebSocket desplegable en Render; mantiene presencia en memoria, valida estados, publica snapshots a 15 Hz y admite hasta 24 pilotos por sala.
 - El registro inicial ahora solicita un código de sala y el HUD muestra conexión y cantidad de pilotos. Los astronautas remotos tienen nombre, color, animación e interpolación de posición y orientación.
 - Se añadió reconexión con espera progresiva, health check, restricción opcional de orígenes y configuración de producción mediante `VITE_MULTIPLAYER_URL` y `render.yaml`.

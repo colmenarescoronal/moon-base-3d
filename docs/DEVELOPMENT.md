@@ -30,7 +30,7 @@ Hay dos formas admitidas:
 
 Después del despliegue, abrir la URL pública y comprobar el modelo del astronauta, el formulario de nombre, el movimiento y la consola del navegador. Un modelo ausente suele indicar que no se subió la carpeta `dist/models` en un despliegue manual.
 
-El backend no se despliega en Netlify. `render.yaml` crea un Web Service de Render con raíz `server/`. Configurar `ALLOWED_ORIGINS` en Render con el origen de Netlify y `VITE_MULTIPLAYER_URL` en Netlify con `wss://<servicio>.onrender.com/ws`; esta última variable se incorpora al frontend durante el build, por lo que exige un nuevo despliegue. `/health` devuelve la cantidad actual de salas y jugadores.
+El backend no se despliega en Netlify. `render.yaml` crea un Web Service de Render con raíz `server/`. Configurar `ALLOWED_ORIGINS` en Render con el origen de Netlify. `src/network/multiplayer.js` conserva el endpoint público actual como respaldo para Netlify Drop; `VITE_MULTIPLAYER_URL` permite sobrescribirlo durante builds conectados a Git. Cualquier cambio de endpoint exige un nuevo build y despliegue. `/health` devuelve la cantidad actual de salas y jugadores.
 
 Los mensajes del cliente nunca se aplican directamente sin límites: `server/server.js` limpia nombres y salas, valida colores, restringe coordenadas y velocidad, limita tamaño y frecuencia de mensajes y usa ping/pong para retirar conexiones muertas. Al añadir mensajes nuevos, mantener la validación en el servidor y evitar enviar geometría, partículas o cámara, que deben seguir siendo locales.
 
